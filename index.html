@@ -10,10 +10,10 @@
   <body>
     <div id="txStatus"></div>
     <div id="zombies"></div>
-    <button type="button" onclick="createRandomZombie('43');">Crear zombie</button>
+    <button type="button" onclick="createRandomZombie('Yarinka');">Crear zombie</button>
     <button type="button" onclick="transferZombie('0x097BEfBA386a706EC182EC5611B31e1EED55206d', 0);">Transferir Zombie</button>
-    <button type="button" onclick="levelUp(0);">Subir de nivel</button>
-    <button type="button" onclick="attack(1,3);">Atacar</button>
+    <button type="button" onclick="levelUp(2);">Subir de nivel</button>
+    <button type="button" onclick="attack(0,2);">Atacar</button>
 
     <script>
       var contract;
@@ -42,14 +42,13 @@
       function displayZombies(ids) {
         $("#zombies").empty();
         for (id of ids) {
-          
+          let aux_id = id;
           getZombieDetails(id)
           .then(function(zombie) {
             
-            
             $("#zombies").append(`<div class="zombie">
               <ul>
-                <li>ID: ${id}</li>
+                <li>ID: ${aux_id}</li>
                 <li>Name: ${zombie.name}</li>
                 <li>DNA: ${zombie.dna}</li>
                 <li>Level: ${zombie.level}</li>
