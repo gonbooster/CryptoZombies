@@ -1,6 +1,6 @@
 var HDWalletProvider = require("truffle-hdwallet-provider");
 var mnemonic = "finger safe spike forget club vast pudding betray spice alter poem cream";
-let _token = "28d70d503b354a3484c7f1a47626ae32";
+let _token = "28d70d503b354a3484c7f1a47626ae32"; //infura token
 module.exports = {
   // migrations_directory: "./src/migrations",
   // contracts_directory: "./src/contracts/",
@@ -11,6 +11,13 @@ module.exports = {
       port: 7545,
       network_id: 5777,
     },
+
+    ganache: {
+      host: "localhost",
+      port: 7545,
+      gas: 5000000,
+      network_id: 5777
+  },
 
     ropsten: {
       host: "127.0.0.1",

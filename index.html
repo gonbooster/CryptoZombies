@@ -9,11 +9,9 @@
   </head>
   <body>
     <div id="txStatus"></div>
+    <button type="button" onclick="createRandomZombie();">Crear zombie</button>
+    <button type="button" onclick="attack(0,1);">Atacar Z0 -> Z1</button>
     <div id="zombies"></div>
-    <button type="button" onclick="createRandomZombie('Yarinka');">Crear zombie</button>
-    <button type="button" onclick="transferZombie('0x097BEfBA386a706EC182EC5611B31e1EED55206d', 0);">Transferir Zombie</button>
-    <button type="button" onclick="levelUp(2);">Subir de nivel</button>
-    <button type="button" onclick="attack(0,2);">Atacar</button>
 
     <script>
       var contract;
@@ -21,7 +19,7 @@
 
       function startApp() {
 
-        var cryptoZombiesAddress = "0x4AFb6586CF863b18ADA346F8Fef67a5d89f9dc9F"; //rinkeby
+        var cryptoZombiesAddress = "0xE9562ba32f69F5B388496A43e50A1D267895b2D9"; // contract address
 
         contract = new web3js.eth.Contract(cryptoZombiesABI,cryptoZombiesAddress);
         web3js.eth.getAccounts().then(function(result){
@@ -39,7 +37,17 @@
      
       }
 
+      function randomString(length, chars) {
+        var result = '';
+        for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+        return result;
+      }
+
+
       function displayZombies(ids) {
+        if(ids == null)
+          return;
+
         $("#zombies").empty();
         for (id of ids) {
           let aux_id = id;
@@ -56,14 +64,16 @@
                 <li>Losses: ${zombie.lossCount}</li>
                 <li>Ready Time: ${zombie.readyTime}</li>
               </ul>
+              <button type="button" onclick="levelUp(${aux_id});">Subir de nivel</button>
+              <button type="button" onclick="changeName(${aux_id});">Cambiar nombre</button>
             </div>`);
           });
         }
       }
 
-      function createRandomZombie(name) {
+      function createRandomZombie() {
         
-        
+        var name = randomString(7, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
         $("#txStatus").text("Creating new zombie on the blockchain. This may take a while...");
         
         return contract.methods.createRandomZombie(name)
@@ -110,6 +120,17 @@
         return contract.methods.attack(zombieId, target_id).call();
       }
 
+      function changeName(zombieId) {
+        $("#txStatus").text("Changing name zombie...");
+        var name = randomString(7, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        return contract.methods.changeName(zombieId, name).call();
+      }
+
+      function attack(zombieId, target_id) {
+        $("#txStatus").text("Attacking zombie...");
+        return contract.methods.attack(zombieId, target_id).call();
+      }
+
       function getZombieDetails(id) {
         return contract.methods.zombies(id).call()
       }
@@ -142,12 +163,13 @@
       
       window.addEventListener('load', function() {
 
-          if (window.ethereum) {
-            web3js = new Web3(window.ethereum);
-            window.ethereum.enable();
+          if (typeof web3 !== 'undefined') {
+            web3js = new Web3(web3.currentProvider);
           } else {
-              window.alert('Non-Ethereum browser detected. Please install MetaMask plugin');
-          };
+            // If no injected web3 instance is detected, fallback to Ganache.
+            var provider = new web3.providers.HttpProvider('http://127.0.0.1:7545');
+            web3js = new Web3(provider);
+          }
 
         startApp()
 
